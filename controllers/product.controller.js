@@ -20,7 +20,11 @@ productController.createProduct = async (req, res) => {
     await product.save();
     res.status(200).json({ status: "success", product });
   } catch (error) {
-    res.status(400).json({ status: "failed", error: error.message });
+    let clientMessage = error.message;
+    if (error.code === 11000 && error.keyPattern?.sku) {
+      clientMessage = "이미 사용 중인 SKU입니다. 다른 값을 입력해주세요.";
+    }
+    res.status(400).json({ status: "failed", error: clientMessage });
   }
 };
 
